@@ -95,11 +95,12 @@ def FindMaxPrice(resData):
             maxPrice = i.totalPrice
     return res
 
-
-data = open("inst/knap_4.inst.dat")
-f = open("sol/knap_4.sol.dat")
+dataFILE = 10
+data = open("inst/knap_"+str(dataFILE)+".inst.dat")
+f = open("sol/knap_"+str(dataFILE)+".sol.dat")
 refResLines=f.readlines()
 print("bruteforce starting...")
+relErrors = []
 for i, line in enumerate(data):
     dataList = []
     resData = [] #pole permutations
@@ -113,19 +114,24 @@ for i, line in enumerate(data):
 
     resultHeuristics = Heuristics(M, dataList)
 
-    nicePrint([resultHeuristics])
+    #nicePrint([resultHeuristics])
 
-    if(PRes == result.totalPrice):
+    if(PRes == resultHeuristics.totalPrice):
         print "result " + str(id) + " OK "
     else:
         print "result " + str(id) + " not optimal "
+        #nicePrint([resultHeuristics])
+        #nicePrint([result])
+        relErrors.append(abs(resultHeuristics.totalPrice-PRes)/float(PRes))
 
     #print refResLines[i]
     #print "Best score"
     #nicePrint([result])
     #print  result
+print(max(relErrors))
+print(sum(relErrors)/50)
 
 
-    break
+
 
 
