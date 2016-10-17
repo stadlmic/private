@@ -1,5 +1,5 @@
 import copy
-import pprint
+import time
 import math
 
 class permutation:
@@ -95,42 +95,47 @@ def FindMaxPrice(resData):
             maxPrice = i.totalPrice
     return res
 
-dataFILE = 10
+dataFILE = 40
 data = open("inst/knap_"+str(dataFILE)+".inst.dat")
 f = open("sol/knap_"+str(dataFILE)+".sol.dat")
 refResLines=f.readlines()
 print("bruteforce starting...")
 relErrors = []
-for i, line in enumerate(data):
-    dataList = []
-    resData = [] #pole permutations
-    target = []
-    dummy, idRes, nRes, PRes = loadLineRes(refResLines[i])
-    dataList, id, n, M = loadLine(line)
+start = time.time()
+for i in range(0, 1000):
+    for i, line in enumerate(data):
+        dataList = []
+        resData = [] #pole permutations
+        target = []
+        dummy, idRes, nRes, PRes = loadLineRes(refResLines[i])
+        dataList, id, n, M = loadLine(line)
 
-    combinations(M,target,dataList)
-    result = FindMaxPrice(resData)
+        #combinations(M,target,dataList)
+        #result = FindMaxPrice(resData)
 
 
-    resultHeuristics = Heuristics(M, dataList)
+        resultHeuristics = Heuristics(M, dataList)
 
-    #nicePrint([resultHeuristics])
-
-    if(PRes == resultHeuristics.totalPrice):
-        print "result " + str(id) + " OK "
-    else:
-        print "result " + str(id) + " not optimal "
         #nicePrint([resultHeuristics])
+
+        """
+        if(PRes == resultHeuristics.totalPrice):
+            print "result " + str(id) + " OK "
+        else:
+            print "result " + str(id) + " not optimal "
+            #nicePrint([resultHeuristics])
+            #nicePrint([result])
+            relErrors.append(abs(resultHeuristics.totalPrice-PRes)/float(PRes))
+        """
+        #print refResLines[i]
+        #print "Best score"
         #nicePrint([result])
-        relErrors.append(abs(resultHeuristics.totalPrice-PRes)/float(PRes))
-
-    #print refResLines[i]
-    #print "Best score"
-    #nicePrint([result])
-    #print  result
-print(max(relErrors))
-print(sum(relErrors)/50)
-
+        #print  result
+    #print(max(relErrors))
+#print(sum(relErrors)/50)
+print "finished"
+end = time.time()
+print(end - start)
 
 
 
