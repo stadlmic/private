@@ -6,7 +6,8 @@ import ast
 from symbol import for_stmt
 
 validFound = 0
-class itemFormula:
+#holds individual clauses
+class clause:
     f = 0
     s = 0
     t = 0
@@ -19,6 +20,7 @@ class itemFormula:
         self.s = s
         self.t = t
 
+#holds whole formula + formula related methods
 class Formula:
     n = 0
     c = 0
@@ -69,6 +71,7 @@ class Formula:
             return 1
         return 0
 
+#file loader
 def loadMultine(f):
     variablesCount, clausesCount = 0,0
     l_weights = []
@@ -85,7 +88,7 @@ def loadMultine(f):
             variablesCount = int(parts[2])  # no of variables
             clausesCount = int(parts[3])  # no of clauses
             continue #comment
-        newItem = itemFormula(parts[0], parts[1], parts[2])
+        newItem = clause(parts[0], parts[1], parts[2])
         l_dataList.append(newItem)
 
     if(variablesCount != len(l_weights) or clausesCount != len(l_dataList)):
@@ -93,11 +96,11 @@ def loadMultine(f):
         exit -1
     return Formula(id, l_dataList, l_weights)
 
+#AA main func
 def annealing_algorithm(formula, init_temp=100, steps=100):
     start_sol, start_satisfiedClauses = init_solution(formula)
     best_price, solution = simulate(start_sol, formula, init_temp, steps)
     n = formula.variablesCount
-
     best_combination = [0] * n
     for idx in solution:
         best_combination[idx-1] = 1
@@ -106,6 +109,7 @@ def annealing_algorithm(formula, init_temp=100, steps=100):
             exit -1
     return best_price, best_combination, solution
 
+#starting random solution
 def init_solution(formula):
     solution = []
     rand = random.randint(0, formula.variablesCount-1 ) #allowed_positions
@@ -113,6 +117,7 @@ def init_solution(formula):
     satisfiedClauses = formula.computeSatisfiedClauses(solution)
     return solution, satisfiedClauses
 
+#calculate fitnes
 def fitness(solution, formula):
     satisfiedClauses = formula.computeSatisfiedClauses( solution) + 0.0
     clausesCount = formula.clausesCount + 0.0
@@ -125,9 +130,9 @@ def fitness(solution, formula):
         fitness *= 2
     return fitness
 
+#generate possible moves
 def moveto(solution, formula):
     moves = []
-    #for i, _ in enumerate(formula.clauses): #TODO tady si nejsem jistej, ale funguje
     for i, _ in enumerate(formula.weights):
         if i not in solution:
             move = solution[:]
@@ -147,6 +152,7 @@ def moveto(solution, formula):
             moves.append(move)
     return moves
 
+#start simulation
 def simulate(solution, formula, init_temp, steps):
     temperature = init_temp
     best = solution
@@ -171,6 +177,7 @@ def simulate(solution, formula, init_temp, steps):
             break
     return best_price, best
 
+#main
 for a in range(0,30,1):
     #ALPHA = a / 10.0
     ALPHA = 0.2
